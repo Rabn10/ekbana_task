@@ -23,9 +23,13 @@ class CompanyCategoryController extends Controller
 
     public function store(Request $request) {
         try {
-            $category = CompanyCategory::create([
-                'title' => $request->title
+            $request->validate([
+                'title' => 'required'
             ]);
+
+            $category = new CompanyCategory();
+            $category->title = $request->title;
+            $category->save();
 
             return response()->json([
                 'status' => 'success',
@@ -55,6 +59,9 @@ class CompanyCategoryController extends Controller
 
     public function update(Request $request, $id) {
         try {
+            $request->validate([
+                'title' => 'required'
+            ]);
             $category = CompanyCategory::find($id);
             $category->title = $request->title;
             $category->save();
