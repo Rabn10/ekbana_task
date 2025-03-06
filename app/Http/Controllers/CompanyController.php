@@ -10,7 +10,7 @@ class CompanyController extends Controller
 
     public function index() {
         try {
-            $companies = Company::where('delete_status', 1)->paginate('3');
+            $companies = Company::where('delete_status', 1)->paginate('10');
 
             return response()->json([
                 'status' => 'success',
@@ -38,6 +38,11 @@ class CompanyController extends Controller
 
     public function store(Request $request) {
         try {
+            $request->validate([
+                'title' => 'required',
+                'image' => 'mimes:jpeg,png,jpg|max:2048'
+            ]);
+
             $company = new Company();
             $company->title = $request->title;
             $company->description = $request->description;
@@ -64,6 +69,10 @@ class CompanyController extends Controller
 
     public function update(Request $request, $id) {
         try {
+            $request->validate([
+                'title' => 'required',
+                'image' => 'mimes:jpeg,png,jpg|max:2048'
+            ]);
             $company = Company::find($id);
             $company->title = $request->title;
             $company->description = $request->description;
