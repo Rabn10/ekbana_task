@@ -9,7 +9,7 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-Route::group(['prefix' => 'category'], function () {
+Route::group(['middleware' => ['api.key'] ,'prefix' => 'category'], function () {
     Route::get('/', [CompanyCategoryController::class, 'index']);
     Route::get('/search', [CompanyCategoryController::class, 'search']);
     Route::get('/{id}', [CompanyCategoryController::class, 'show']);
@@ -18,7 +18,7 @@ Route::group(['prefix' => 'category'], function () {
     Route::delete('/{id}',[CompanyCategoryController::class, 'destroy']);
 });
 
-Route::group(['prefix' => 'company'], function () {
+Route::group( ['middleware' => ['api.key'] ,'prefix' => 'company'], function () {
     Route::get('/', [CompanyController::class, 'index']);
     Route::get('/{id}', [CompanyController::class, 'show']);
     Route::post('/', [CompanyController::class, 'store']);
