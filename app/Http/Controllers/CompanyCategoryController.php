@@ -9,13 +9,39 @@ class CompanyCategoryController extends Controller
 {
     public function index() {
         try {
-            $category = CompanyCategory::where('delete_status', 1)->paginate('2');
+            $category = CompanyCategory::where('delete_status', 1)->paginate('10');
 
             return response()->json([
                 'status' => 'success',
                 'data' => $category,
             ]);
         }
+        catch(Exception $e) {
+           throw $e; 
+        }
+    }
+
+    public function search(Request $request) {
+        try {
+            $keyword = $request->query('keyword');
+
+            if(empty($keyword)) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'keyword is required for serch',
+                ]);
+        }
+
+            $category = CompanyCategory::where('delete_status', 1)
+            ->where('title', 'LIKE', '%'.$keyword.'%')
+            ->get();
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $category,
+            ]);
+        }
+
         catch(Exception $e) {
            throw $e; 
         }
@@ -44,7 +70,14 @@ class CompanyCategoryController extends Controller
 
     public function show($id) {
         try {
-            $category = CompanyCategory::where('delete_status', 1)->find($id);
+            $category = CompanyCategory::with('companies')->where('delete_status', 1)->find($id);
+
+            if(!$category) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'category not found',
+                ]);
+            }
 
             return response()->json([
                 'status' => 'success',

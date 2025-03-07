@@ -4,27 +4,45 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Company;
+use Illuminate\Support\Facades\DB;
+
 
 class CompanyController extends Controller
 {
-
-    public function index() {
+    public function index(Request $request) {
         try {
-            $companies = Company::where('delete_status', 1)->paginate('10');
+            $query = DB::table('companies as c')
+                ->leftJoin('company_categories as cc', 'c.category_id', '=', 'cc.id')
+                ->where('c.delete_status', 1)
+                ->select('c.id', 'c.category_id', 'cc.title as category_title', 'c.title as company_title', 'c.description', 'c.image');
 
+            if ($request->has('category_id')) {
+                $query->where('c.category_id', $request->category_id);
+            }
+    
+            $companies = $query->paginate(10);
+    
             return response()->json([
                 'status' => 'success',
                 'data' => $companies,
             ]);
-        }
-        catch (\Exception $e) {
-            throw $e;
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+            ], 500);
         }
     }
+    
 
     public function show($id) {
         try {
-            $company = Company::where('delete_status', 1)->find($id);
+            $company = DB::table('companies as c')
+                    ->leftjoin('company_categories as cc', 'c.category_id', '=', 'cc.id')
+                    ->where('c.id', $id)
+                    ->where('c.delete_status', 1)
+                    ->select('c.id','c.category_id','cc.title as category_title','c.title as company_title','c.description','c.image')
+                    ->first();
 
             return response()->json([
                 'status' => 'success',
@@ -97,9 +115,16 @@ class CompanyController extends Controller
         }
     }
 
-    public function destory($id) {
+    public function destroy($id) {
+        // dd($id);
         try {
             $company = Company::find($id);
+            if($company->image) {
+                $image_path = public_path('images').'/'. $company->image;
+                if(file_exists($image_path)) {
+                    unlink($image_path);
+                }
+            }
             $company->delete_status = 0;
             $company->save();
 

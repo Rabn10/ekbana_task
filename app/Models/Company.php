@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\CompanyCategory;
 
 class Company extends Model
 {
@@ -14,4 +15,9 @@ class Company extends Model
         'status',
         'delete_status',
     ];
+
+    public function category()
+    {
+        return $this->belongsTo(CompanyCategory::class, 'category_id', 'id');
+    }
 }

@@ -11,6 +11,7 @@ Route::get('/user', function (Request $request) {
 
 Route::group(['prefix' => 'category'], function () {
     Route::get('/', [CompanyCategoryController::class, 'index']);
+    Route::get('/search', [CompanyCategoryController::class, 'search']);
     Route::get('/{id}', [CompanyCategoryController::class, 'show']);
     Route::post('/', [CompanyCategoryController::class, 'store']);
     Route::put('/{id}',[CompanyCategoryController::class, 'update']);
