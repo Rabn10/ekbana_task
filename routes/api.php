@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CompanyCategoryController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\EmployeeController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -25,3 +26,7 @@ Route::group( ['middleware' => ['api.key'] ,'prefix' => 'company'], function () 
     Route::post('/{id}',[CompanyController::class, 'update']);
     Route::delete('/{id}',[CompanyController::class, 'destroy']);
 });
+
+
+Route::post('/employee', [EmployeeController::class, 'store']);
+
